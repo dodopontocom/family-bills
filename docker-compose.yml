@@ -17,7 +17,9 @@ services:
     depends_on:
       - mongo
     environment:
-      - MONGO_URI=mongodb://mongo:27017/family-bills
+      - MONGO_URI=${MONGO_URI}
+    env_file:
+      - .env
     volumes:
       - .:/usr/src/app
     command: npm start
