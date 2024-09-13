@@ -4,7 +4,7 @@ import mongoose, { Document, Schema } from 'mongoose';
 export interface IBill extends Document {
   name: string;
   description: string;
-  type: string;
+  type: 'Cartao' | 'Casa' | 'Imoveis' | 'Outros';
   dueDate: Date;
   alert: boolean;
   status: 'paid' | 'unpaid' | 'overdue';
@@ -14,7 +14,7 @@ export interface IBill extends Document {
 const BillSchema: Schema = new Schema({
   name: { type: String, required: true },
   description: { type: String },
-  type: { type: String, required: true },
+  type: { type: String, enum: ['Cartao', 'Casa', 'Imoveis', 'Outros'], default: 'Outros', required: true },
   dueDate: { type: Date, required: true },
   alert: { type: Boolean, default: false },
   status: { type: String, enum: ['paid', 'unpaid', 'overdue'], default: 'unpaid' }

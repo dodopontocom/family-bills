@@ -23,7 +23,7 @@ export const createBill = async (req: Request, res: Response) => {
     const newBill: IBill = new Bill({
       name,
       description,
-      type,
+      type: 'Outros',
       dueDate,
       alert,
       status: 'unpaid', // Padrão para "não paga" ao criar
