@@ -1,34 +1,17 @@
-# Etapa 1: Construção
-FROM node:18 AS build
+# Use a imagem oficial do Node.js como base
+FROM node:18-alpine
 
-# Defina o diretório de trabalho
-WORKDIR /app
+# Define o diretório de trabalho
+WORKDIR /usr/src/app
 
-# Copie o package.json e o package-lock.json
+# Copia os arquivos do projeto para o diretório de trabalho
 COPY package*.json ./
-
-# Instale as dependências
 RUN npm install
-
-# Copie o código-fonte
 COPY . .
 
-# Compile o TypeScript
-RUN npm run build
-
-# Etapa 2: Imagem de Produção
-FROM node:18-slim
-
-# Defina o diretório de trabalho
-WORKDIR /app
-
-# Copie apenas os artefatos necessários da etapa de construção
-COPY --from=build /app/dist /app/dist
-COPY --from=build /app/node_modules /app/node_modules
-COPY --from=build /app/package*.json /app/
-
-# Exponha a porta que o servidor vai escutar
+# Expõe a porta que a aplicação vai usar
 EXPOSE 5000
 
 # Comando para iniciar a aplicação
 CMD ["npm", "start"]
+
