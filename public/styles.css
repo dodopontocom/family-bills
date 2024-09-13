@@ -156,3 +156,24 @@ button:hover {
     margin-bottom: 0;
   }
 }
+
+.days-container {
+  margin-top: 10px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.days-counter {
+  display: inline-block;
+  padding: 5px 10px;
+  background: #e0e0e0;
+  border-radius: 5px;
+  animation: fadeIn 1s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+

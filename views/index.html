@@ -48,6 +48,11 @@
               break;
           }
 
+          const dueDate = new Date(bill.dueDate);
+          const today = new Date();
+          const timeDiff = dueDate - today;
+          const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
+
           card.innerHTML = `
             <h3>${bill.name}</h3>
             <p>Data de Vencimento: ${new Date(bill.dueDate).toLocaleDateString()}</p>
@@ -56,6 +61,10 @@
               <input type="checkbox" ${bill.status === 'paid' ? 'checked' : ''} data-id="${bill._id}" />
               <span class="checkbox-text">${bill.status === 'paid' ? 'Conta marcada como paga' : 'Marcado como Não Pago'}</span>
             </label>
+            <div class="days-container">
+              <p id="days-${bill._id}" class="days-counter">${daysDiff} dias até o vencimento</p>
+            </div>
+
           `;
           container.appendChild(card);
         });
@@ -107,6 +116,17 @@
               if (checkboxText) {
                 checkboxText.textContent = bill.status === 'paid' ? 'Conta marcada como paga' : 'Marcado como Não Pago';
               }
+
+              // Atualize o contador de dias
+              const dueDate = new Date(bill.dueDate);
+              const today = new Date();
+              const timeDiff = dueDate - today;
+              const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
+              const daysElement = card.querySelector(`#days-${bill._id}`);
+              if (daysElement) {
+                daysElement.textContent = `${daysDiff} dias até o vencimento`;
+              }
+
             } catch (error) {
               console.error('Erro ao atualizar o status:', error);
             }
