@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Página Inicial</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <h1>Gerenciador de Contas</h1>
+      <div class="button-group">
+        <!-- <button type="submit" class="save-button">Adicionar Conta +</button> -->
+      </div>
+      <a href="/cadastrar-conta" class="add-button">Cadastrar Conta</a>
+    </div>
+  </header>
+  <main>
+    <div id="cards-container" class="card">
+      <!-- Os cards serão adicionados aqui pelo JavaScript -->
+    </div>
+  </main>
+
+  <script>
+    async function fetchBills() {
+      try {
+        const response = await fetch('/api/bills');
+        const bills = await response.json();
+        const container = document.getElementById('cards-container');
+
+        container.innerHTML = ''; // Limpa o container antes de adicionar os novos cards
+
+        bills.forEach(bill => {
+          const card = document.createElement('div');
+          card.classList.add('index-card');
+
+          // Adicionar classe de cor baseada no status
+          switch (bill.status) {
+            case 'paid':
+              card.classList.add('green');
+              break;
+            case 'unpaid':
+              card.classList.add('orange');
+              break;
+            case 'overdue':
+              card.classList.add('red');
+              break;
+          }
+
+          card.innerHTML = `
+            <h3>${bill.name}</h3>
+            <p>Data de Vencimento: ${new Date(bill.dueDate).toLocaleDateString()}</p>
+            <p id="status-${bill._id}">Status: ${bill.status.charAt(0).toUpperCase() + bill.status.slice(1)}</p>
+            <label>
+              <input type="checkbox" ${bill.status === 'paid' ? 'checked' : ''} data-id="${bill._id}" />
+              <span class="checkbox-text">${bill.status === 'paid' ? 'Conta marcada como paga' : 'Marcado como Não Pago'}</span>
+            </label>
+          `;
+          container.appendChild(card);
+        });
+
+        // Adicionar listeners para checkboxes
+        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+          checkbox.addEventListener('change', async (event) => {
+            const checkbox = event.target;
+            const id = checkbox.getAttribute('data-id');
+            const status = checkbox.checked ? 'paid' : 'unpaid';
+
+            try {
+              const response = await fetch(`/api/bills/${id}/status`, {
+                method: 'PATCH',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ status })
+              });
+
+              if (!response.ok) {
+                throw new Error('Erro ao atualizar o status da conta');
+              }
+
+              // Atualize o card com o novo status
+              const bill = await response.json();
+              const card = checkbox.closest('.index-card');
+              card.className = 'index-card'; // Remove classes antigas
+              switch (bill.status) {
+                case 'paid':
+                  card.classList.add('green');
+                  break;
+                case 'unpaid':
+                  card.classList.add('orange');
+                  break;
+                case 'overdue':
+                  card.classList.add('red');
+                  break;
+              }
+
+              // Atualize o texto do status
+              const statusElement = card.querySelector(`#status-${bill._id}`);
+              if (statusElement) {
+                statusElement.textContent = `Status: ${bill.status.charAt(0).toUpperCase() + bill.status.slice(1)}`;
+              }
+
+              // Atualize o texto ao lado do checkbox
+              const checkboxText = card.querySelector('.checkbox-text');
+              if (checkboxText) {
+                checkboxText.textContent = bill.status === 'paid' ? 'Conta marcada como paga' : 'Marcado como Não Pago';
+              }
+            } catch (error) {
+              console.error('Erro ao atualizar o status:', error);
+            }
+          });
+        });
+      } catch (error) {
+        console.error('Erro ao buscar as contas:', error);
+      }
+    }
+
+    // Chama a função para carregar as contas quando a página for carregada
+    document.addEventListener('DOMContentLoaded', fetchBills);
+  </script>
+</body>
+</html>

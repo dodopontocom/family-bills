@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cadastrar Conta</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header>
+    <h1>Cadastrar Nova Conta</h1>
+  </header>
+
+  <main>
+    <div class="card">
+      <form action="/api/cadastrar-conta" method="POST">
+        <div class="form-group">
+          <label for="name">Nome da Conta:</label>
+          <input type="text" id="name" name="name" required>
+        </div>
+
+        <div class="form-group">
+          <label for="description">Descrição:</label>
+          <textarea id="description" name="description" required></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="type">Tipo:</label>
+          <select id="type" name="type" required>
+            <option value="luz">Luz</option>
+            <option value="agua">Água</option>
+            <option value="internet">Internet</option>
+            <option value="aluguel">Aluguel</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="day">Dia de Vencimento:</label>
+          <input type="number" id="day" name="day" min="1" max="31" required>
+        </div>
+
+        <!-- <div class="form-group">
+          <label for="alert">Alerta</label>
+          <input type="checkbox" id="alert" name="alert">
+        </div> -->
+
+        <div class="button-group">
+          <button type="submit" class="save-button">Salvar Conta e Sair</button>
+          <button type="submit" name="addAnother" value="true" class="add-button">Salvar e Adicionar +</button>
+        </div>
+      </form>
+    </div>
+  </main>
+</body>
+</html>
