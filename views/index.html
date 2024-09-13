@@ -51,19 +51,34 @@
           const dueDate = new Date(bill.dueDate);
           const today = new Date();
           const timeDiff = dueDate - today;
-          const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
+          const diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
+          let daysText = '';
+          let counterClass = 'counter-text'; // Classe padrão para o contador
+
+          // Condições do contador com base no status e datas
+          if (bill.status === 'paid') {
+            if (diffDays >= 0) {
+              daysText = 'Pago em dia';
+            } else {
+              daysText = `Foi pago com ${Math.abs(diffDays)} dias de atraso`;
+              counterClass = 'counter-late'; // Estilo para atrasos
+            }
+          } else if (diffDays < 0) {
+            daysText = `Atrasado ${Math.abs(diffDays)} dias`;
+            counterClass = 'counter-overdue'; // Estilo para contas em atraso
+          } else {
+            daysText = `Vence em ${diffDays} dias`;
+          }
 
           card.innerHTML = `
             <h3>${bill.name}</h3>
             <p>Data de Vencimento: ${new Date(bill.dueDate).toLocaleDateString()}</p>
             <p id="status-${bill._id}">Status: ${bill.status.charAt(0).toUpperCase() + bill.status.slice(1)}</p>
+            <p class="${counterClass}">${daysText}</p>
             <label>
               <input type="checkbox" ${bill.status === 'paid' ? 'checked' : ''} data-id="${bill._id}" />
               <span class="checkbox-text">${bill.status === 'paid' ? 'Conta marcada como paga' : 'Marcado como Não Pago'}</span>
             </label>
-            <div class="days-container">
-              <p id="days-${bill._id}" class="days-counter">${daysDiff} dias até o vencimento</p>
-            </div>
 
           `;
           container.appendChild(card);
@@ -117,14 +132,32 @@
                 checkboxText.textContent = bill.status === 'paid' ? 'Conta marcada como paga' : 'Marcado como Não Pago';
               }
 
-              // Atualize o contador de dias
+              // Recalcular o contador de dias após o pagamento
               const dueDate = new Date(bill.dueDate);
               const today = new Date();
-              const timeDiff = dueDate - today;
-              const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
-              const daysElement = card.querySelector(`#days-${bill._id}`);
-              if (daysElement) {
-                daysElement.textContent = `${daysDiff} dias até o vencimento`;
+              const diffTime = dueDate - today;
+              const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+              let daysText = '';
+              let counterClass = 'counter-paid';
+
+              if (bill.status === 'paid') {
+                if (diffDays >= 0) {
+                  daysText = 'Pago em dia';
+                } else {
+                  daysText = `Foi pago com ${Math.abs(diffDays)} dias de atraso`;
+                  counterClass = 'counter-late';
+                }
+              } else if (diffDays < 0) {
+                daysText = `Atrasado ${Math.abs(diffDays)} dias`;
+                counterClass = 'counter-overdue';
+              } else {
+                daysText = `Vence em ${diffDays} dias`;
+              }
+
+              const counterElement = card.querySelector('.counter-text, .counter-late, .counter-overdue');
+              if (counterElement) {
+                counterElement.textContent = daysText;
+                counterElement.className = counterClass;
               }
 
             } catch (error) {
